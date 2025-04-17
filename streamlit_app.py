@@ -38,7 +38,6 @@ with st.form("product_form"):
         df = pd.concat([df, new_row], ignore_index=True)
         df.to_csv(FILE_PATH, index=False)
         st.success("商品を追加しました！")
-
 # 共通関数：期限表示
 def render_table(filtered_df):
     today = datetime.datetime.today()
