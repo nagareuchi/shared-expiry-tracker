@@ -8,8 +8,8 @@ FILE_PATH = "products.csv"
 
 # 初期化処理（ファイルがなければ作成）
 if not os.path.exists(FILE_PATH):
-    df = pd.DataFrame(columns=["name", "expiry", "quantity"])
-    df.to_csv(FILE_PATH, index=False)
+    df_init = pd.DataFrame(columns=["name", "expiry", "quantity"])
+    df_init.to_csv(FILE_PATH, index=False)
 
 # CSVの読み込み
 df = pd.read_csv(FILE_PATH)
@@ -38,7 +38,7 @@ with st.form("product_form"):
         df = pd.concat([df, new_row], ignore_index=True)
         df.to_csv(FILE_PATH, index=False)
         st.success("商品を追加しました！")
-        st.experimental_rerun()
+        # st.experimental_rerun()  ← Streamlit 自動再実行あるのでコメントアウト
 
 # 共通関数：期限表示
 def render_table(filtered_df):
@@ -64,12 +64,15 @@ with tab_all:
             df = df.sort_values("expiry")
         render_table(df)
 
-        delete_index = st.number_input("削除したい行番号（0〜）", min_value=0, max_value=len(df)-1, step=1)
+        delete_index = st.number_input(
+            "削除したい行番号（0〜）", min_value=0, max_value=len(df)-1, step=1
+        )
         if st.button("指定した行を削除"):
             df = df.drop(index=delete_index).reset_index(drop=True)
             df.to_csv(FILE_PATH, index=False)
             st.success("削除しました")
-            st.experimental_rerun()
+            # st.experimental_rerun()  ← コメントアウト
+
     else:
         st.info("まだ商品が登録されていません。")
 
