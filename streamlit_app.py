@@ -18,27 +18,6 @@ df["expiry"] = pd.to_datetime(df["expiry"], errors='coerce')
 # ヘッダー
 st.title("賞味期限管理アプリ（共有用）")
 
-# タブ切り替え
-tab_all, tab_frequent = st.tabs(["すべての商品", "よく使う商品"])
-
-# 入力フォーム
-with st.form("product_form"):
-    st.subheader("商品を追加")
-    name = st.text_input("商品名")
-    expiry = st.date_input("賞味期限", datetime.date.today())
-    quantity = st.number_input("数量", min_value=1, value=1, step=1)
-    submitted = st.form_submit_button("追加")
-
-    if submitted:
-        new_row = pd.DataFrame({
-            "name": [name],
-            "expiry": [pd.to_datetime(expiry)],  # ← ここ修正
-            "quantity": [quantity]
-        })
-        df = pd.concat([df, new_row], ignore_index=True)
-        df.to_csv(FILE_PATH, index=False)
-        st.success("商品を追加しました！")
-
 # 共通関数：期限表示
 def render_table(filtered_df):
     today = datetime.datetime.today()
@@ -55,6 +34,27 @@ def render_table(filtered_df):
     styled = filtered_df.style.apply(color_row, axis=1)
     st.dataframe(styled, use_container_width=True)
 
+# タブ切り替え
+tab_all, tab_frequent = st.tabs(["すべての商品", "よく使う商品"])
+
+# 入力フォーム
+with st.form("product_form"):
+    st.subheader("商品を追加")
+    name = st.text_input("商品名")
+    expiry = st.date_input("賞味期限", datetime.date.today())
+    quantity = st.number_input("数量", min_value=1, value=1, step=1)
+    submitted = st.form_submit_button("追加")
+
+    if submitted:
+        new_row = pd.DataFrame({
+            "name": [name],
+            "expiry": [expiry],
+            "quantity": [quantity]
+        })
+        df = pd.concat([df, new_row], ignore_index=True)
+        df.to_csv(FILE_PATH, index=False)
+        st.success("商品を追加しました！")
+
 # すべての商品タブ
 with tab_all:
     st.subheader("すべての商品")
@@ -70,7 +70,8 @@ with tab_all:
             df = df.drop(index=delete_index).reset_index(drop=True)
             df.to_csv(FILE_PATH, index=False)
             st.success("削除しました")
-            # st.experimental_rerun() ← コメントアウトでOK
+            # st.experimental_rerun()  ← コメントアウト
+
     else:
         st.info("まだ商品が登録されていません。")
 
