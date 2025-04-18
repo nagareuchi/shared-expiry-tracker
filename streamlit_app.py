@@ -14,24 +14,11 @@ if not os.path.exists(FILE_PATH):
 # CSVの読み込み
 df = pd.read_csv(FILE_PATH)
 
-# 日付変換（不正な日付はNaTになる）
+# 'expiry' 列を datetime 型に変換
 df["expiry"] = pd.to_datetime(df["expiry"], errors='coerce')
-
-# 不正な日付のある行を検出
-invalid_rows = df[df["expiry"].isna()]
 
 # ヘッダー
 st.title("賞味期限管理アプリ（共有用）")
-
-# 不正な日付がある場合は警告と表示
-if not invalid_rows.empty:
-    st.warning("以下の行の賞味期限が不正です（修正・削除してください）:")
-    st.dataframe(invalid_rows)
-    if st.button("不正な行をすべて削除"):
-        df = df[df["expiry"].notna()].reset_index(drop=True)
-        df.to_csv(FILE_PATH, index=False)
-        st.success("不正な行を削除しました")
-        st.experimental_rerun()
 
 # タブ切り替え
 tab_all, tab_frequent = st.tabs(["すべての商品", "よく使う商品"])
